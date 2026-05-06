@@ -1,8 +1,6 @@
 global:
   user: ec2-user
   ssh_port: 22
-  ssh_type: "builtin"
-  identity_file: "/home/ec2-user/.ssh/tidb-key.pem"
 pd_servers:
 - host: 10.0.12.38
 - host: 10.0.4.42
