@@ -1,0 +1,21 @@
+global:
+  user: ec2-user
+  ssh_port: 22
+pd_servers:
+- host: 10.0.12.38
+- host: 10.0.4.42
+- host: 10.0.10.49
+tikv_servers:
+- host: 10.0.10.254
+- host: 10.0.5.7
+- host: 10.0.5.220
+tidb_servers:
+- host: 10.0.7.113
+- host: 10.0.5.177
+- host: 10.0.2.129
+monitoring_servers:
+- host: 10.0.14.110
+grafana_servers:
+- host: 10.0.14.110
+alertmanager_servers:
+- host: 10.0.14.110
