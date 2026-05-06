@@ -1,6 +1,4 @@
-# !/bin/bash
-NAME_PREFIX="${NAME_PREFIX:-tidb}"
-KEY_PAIR_NAME="${KEY_PAIR_NAME:-${NAME_PREFIX}-key}"
-
+source ./tidb.env
 eval "$(ssh-agent -s)"
-ssh-add ~/.ssh/${KEY_PAIR_NAME}.pem
+ssh-add "$KEY_SAVE_PATH"
+ssh-add -l
