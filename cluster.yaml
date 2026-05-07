@@ -1,18 +1,18 @@
 pd_servers:
-- host: 10.0.5.42
-- host: 10.0.0.88
-- host: 10.0.7.147
+- host: 10.0.9.189
+- host: 10.0.8.128
+- host: 10.0.13.227
 tikv_servers:
-- host: 10.0.15.218
-- host: 10.0.0.201
-- host: 10.0.15.177
+- host: 10.0.15.55
+- host: 10.0.12.4
+- host: 10.0.3.43
 tidb_servers:
-- host: 10.0.5.19
-- host: 10.0.5.63
-- host: 10.0.4.88
+- host: 10.0.0.55
+- host: 10.0.7.199
+- host: 10.0.10.74
 monitoring_servers:
-- host: 10.0.2.9
+- host: 10.0.9.90
 grafana_servers:
-- host: 10.0.2.9
+- host: 10.0.9.90
 alertmanager_servers:
-- host: 10.0.2.9
+- host: 10.0.9.90
