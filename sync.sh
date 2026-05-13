@@ -12,8 +12,8 @@ git pull
 # 安装python依赖
 if [[ -f "$ROOT_DIR/requirements.txt" ]]; then
     if [[ -x "$ROOT_DIR/.venv/bin/python" ]]; then
-        "$ROOT_DIR/.venv/bin/pip" install -r "$ROOT_DIR/requirements.txt"
+        "$ROOT_DIR/.venv/bin/python" -m pip install -r "$ROOT_DIR/requirements.txt"
     else
-        pip install -r "$ROOT_DIR/requirements.txt"
+        "${python_cmd:-python3}" -m pip install -r "$ROOT_DIR/requirements.txt"
     fi
 fi
