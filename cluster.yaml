@@ -4,13 +4,10 @@ global:
   deploy_dir: /tidb-deploy
   data_dir: /data
 pd_servers:
-- default: m6g.large
 - host: 10.0.11.201
 tikv_servers:
-- default: i4g.xlarge
 - host: 10.0.10.10
 tidb_servers:
-- default: c7g.xlarge
 - host: 10.0.1.71
 monitoring_servers:
 - host: 10.0.0.220
