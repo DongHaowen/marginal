@@ -3,8 +3,13 @@
 # 添加环境变量
 source ./tidb.env
 
+# 添加到路径
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+
 IDENTITY_FLAG="-i $KEY_SAVE_PATH"
 
+# 检查指令
 # tiup cluster check ${TOPOLOGY_FILE} ${IDENTITY_FLAG}
 # 前置条件检查
 tiup cluster check ${TOPOLOGY_FILE} ${IDENTITY_FLAG} --apply
