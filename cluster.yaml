@@ -4,14 +4,14 @@ global:
   deploy_dir: /tidb-deploy
   data_dir: /data
 pd_servers:
-- host: 10.0.10.213
+- host: 10.0.6.100
 tikv_servers:
-- host: 10.0.13.216
+- host: 10.0.13.179
 tidb_servers:
-- host: 10.0.14.193
+- host: 10.0.15.129
 monitoring_servers:
-- host: 10.0.12.227
+- host: 10.0.6.150
 grafana_servers:
-- host: 10.0.12.227
+- host: 10.0.6.150
 alertmanager_servers:
-- host: 10.0.12.227
+- host: 10.0.6.150
