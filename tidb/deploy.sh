@@ -12,7 +12,7 @@ IDENTITY_FLAG="-i $KEY_SAVE_PATH"
 tiup cluster check ${TOPOLOGY_FILE} ${IDENTITY_FLAG} --apply
 
 # 部署
-tiup cluster deploy ${CLUSTER_NAME} ${CLUSTER_VERSION} ${TOPOLOGY_FILE} ${IDENTITY_FLAG}  
+tiup cluster deploy ${CLUSTER_NAME} ${CLUSTER_VERSION} ${TOPOLOGY_FILE} ${IDENTITY_FLAG} -y
 
 # 启动
 tiup cluster start ${CLUSTER_NAME}

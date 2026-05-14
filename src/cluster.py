@@ -71,16 +71,23 @@ global
     log /dev/log local0
     log /dev/log local1 notice
 
-    maxconn 4096
     daemon
+    maxconn 20000
+
+    stats socket /var/lib/haproxy/stats mode 600 level admin
 
 defaults
     log global
     mode tcp
+
     option tcplog
-    timeout connect 10s
-    timeout client 1m
-    timeout server 1m
+    option dontlognull
+
+    timeout connect 5s
+    timeout client  2m
+    timeout server  2m
+
+    retries 3
 
 frontend tidb_frontend
     bind *:4000
