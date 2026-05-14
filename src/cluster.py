@@ -74,9 +74,6 @@ global
     maxconn 4096
     daemon
 
-    stats socket /var/run/haproxy.sock mode 600 level admin
-    stats timeout 30s
-
 defaults
     log global
     mode tcp
@@ -84,6 +81,7 @@ defaults
     timeout connect 10s
     timeout client 1m
     timeout server 1m
+
 frontend tidb_frontend
     bind *:4000
     default_backend tidb_backend
