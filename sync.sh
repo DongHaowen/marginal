@@ -7,4 +7,4 @@ source ./tidb.env
 git pull
 
 # 安装python依赖
-"$PYTHON_CMD" -m pip install -r "$ROOT_DIR/requirements.txt"
+"$PYTHON_CMD" -m pip install -r "$CURRENT_DIR/requirements.txt"
