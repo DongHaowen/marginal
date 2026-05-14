@@ -70,10 +70,13 @@ class Cluster:
 global
     log /dev/log local0
     log /dev/log local1 notice
-    daemon
+
     maxconn 4096
-    stats socket /run/haproxy/admin.sock mode 660 level admin
+    daemon
+
+    stats socket /var/run/haproxy.sock mode 600 level admin
     stats timeout 30s
+
 defaults
     log global
     mode tcp
