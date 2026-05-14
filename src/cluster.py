@@ -84,14 +84,15 @@ defaults
     option dontlognull
 
     timeout connect 5s
-    timeout client  2m
-    timeout server  2m
+    timeout client  1h
+    timeout server  1h
 
     retries 3
 
 frontend tidb_frontend
     bind *:4000
     default_backend tidb_backend
+
 backend tidb_backend
 {backend_servers}
 """
