@@ -92,3 +92,6 @@ __pypackages__/
 
 # Temporary files
 *.tmp
+
+# Data files
+haproxy.cfg
