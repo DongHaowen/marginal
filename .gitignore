@@ -95,3 +95,5 @@ __pypackages__/
 
 # Data files
 haproxy.cfg
+tidb/lightning/
+sorted
