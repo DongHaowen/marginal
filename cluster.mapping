@@ -1,4 +1,4 @@
 role	index	instance_type	placeholder_ip	private_ip	public_ip	instance_id	instance_name
-pd	0	m7g.large	10.0.1.1	10.0.10.155	18.222.104.142	i-0a7ca6c247e0b1407	tidb-pd-0
-tikv	0	i4g.xlarge	10.0.2.1	10.0.13.178	18.117.249.154	i-0b1d3b1434ba81437	tidb-tikv-0
-tidb	0	c7g.xlarge	10.0.3.1	10.0.6.126	3.142.149.42	i-0b584a0fdd43ed1d4	tidb-tidb-0
+pd	0	m7g.large	10.0.1.1	10.0.14.219	3.145.200.173	i-0e6b6f09343ea9a80	tidb-pd-0
+tikv	0	i4g.xlarge	10.0.2.1	10.0.9.121	13.59.196.81	i-0a2f00bb5cde0f981	tidb-tikv-0
+tidb	0	c7g.xlarge	10.0.3.1	10.0.1.32	3.134.245.44	i-0e23dcaf0ae950ea4	tidb-tidb-0
