@@ -1,0 +1,7 @@
+tenant:
+  name: tenant1
+  workload:
+    - type: tpcc
+  runtime:
+    - start: 0
+      end: 300
