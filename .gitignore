@@ -97,3 +97,4 @@ __pypackages__/
 haproxy.cfg
 tidb/lightning/
 sorted
+bench/*.sh

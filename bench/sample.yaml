@@ -1,0 +1,35 @@
+#
+tenant:
+  name: tenant1
+  workload:
+    - type: tpch
+      tpch_sf: 1
+  database: db1
+  port: 4001
+  user: root
+  password: ""
+  runtime:
+    - start: 0
+      end: 300
+    - start: 400
+      end: 700
+
+tenant:
+  name: tenant2
+  workload:
+    - type: tpcc
+      tpcc_warehouses: 1
+      tpcc_parts: 1
+  runtime:
+    - start: 0
+      end: 500
+
+tenant:
+  name: tenant3
+  workload:
+    - type: ch
+      ch_warehouses: 1
+  runtime:
+    - start: 0
+      end: 100
+  
