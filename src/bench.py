@@ -94,23 +94,23 @@ def _render_run_command(workload: dict[str, Any], duration: int) -> str | None:
 		return (
 			"tiup bench tpcc run "
 			"--db \"$DB\" --port \"$PORT\" --user \"$USER\" --password \"$PASSWORD\" "
-			f"--warehouses {warehouses} --time {duration}"
+			f"--time {duration}s"
 		)
 
 	if workload_type == "tpch":
 		sf = int(workload.get("tpch_sf", 1))
 		return (
-			"tiup bench tpch run -h "
+			"tiup bench tpch run "
 			"--db \"$DB\" --port \"$PORT\" --user \"$USER\" --password \"$PASSWORD\" "
-			f"--sf {sf} --time {duration}"
+			f"--time {duration}s"
 		)
 
 	if workload_type == "ch":
 		warehouses = int(workload.get("ch_warehouses", 1))
 		return (
-			"tiup bench ch run -h "
+			"tiup bench ch run "
 			"--db \"$DB\" --port \"$PORT\" --user \"$USER\" --password \"$PASSWORD\" "
-			f"--warehouses {warehouses} --time {duration}"
+			f"--time {duration}s"
 		)
 
 	return None
