@@ -1,0 +1,21 @@
+tenant:
+  name: tenant1
+  port: 4001
+  workload:
+    - type: tpcc
+      tpcc_warehouses: 100
+      tpcc_parts: 12
+  runtime:
+    - start: 30
+      end: 330
+
+tenant:
+  name: tenant2
+  port: 4002
+  workload:
+    - type: tpcc
+      tpcc_warehouses: 100
+      tpcc_parts: 12
+  runtime:
+    - start: 30
+      end: 330
