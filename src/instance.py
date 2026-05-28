@@ -3,14 +3,16 @@ import numpy as np
 import os
 
 class Instance:
+    RESOURCE_TYPES = ["cpu", "memory", "network", "disk"]
+    
     DEFAULT_PRICE = 1
     DEFAULT_PERFORMANCE = {
         "cpu": 1,
         "memory": 1,
-        "network": 1,
-        "disk": 1
+        "network": 0,
+        "disk": 0
     }
-    # ROOT)_DIR设置为src目录的绝对路径，以便后续读取ec2_price.csv和ec2_performance.csv文件
+    # ROOT_DIR设置为src目录的绝对路径，以便后续读取ec2_price.csv和ec2_performance.csv文件
     ROOT_DIR = os.path.dirname("./")
     # 从csv文件去读取EC2实例的价格和性能数据，并存储在PRICE_TABLE和PERFORMANCE_TABLE中
     PRICE_TABLE = csv.DictReader(open(os.path.join(ROOT_DIR, "ec2_price.csv"), "r", encoding="utf-8"))
@@ -22,6 +24,10 @@ class Instance:
         self.ip = ip
         
         self.price = self.search_price(typo)
+        
+        # 性能序列
+        # 指标 (CPU, MEM, ...)
+        # 单位 (Cores, GB, ...)
         self.performance = self.search_performance(typo)
     
     

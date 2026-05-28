@@ -3,7 +3,7 @@ import yaml
 import csv
 from instance import Instance
 
-class Cluster:
+class HAProxy:
     def __init__(self, name: str = "cluster"):
         self.name: str = name
         self.instances: dict[str, Instance] = {}
@@ -107,8 +107,19 @@ backend tidb_backend
         self.load_instances(os.path.join(root_path, f"{self.name}.mapping"))
         self.load_topology(os.path.join(root_path, f"{self.name}.yaml"))
         self.init_haproxy_cfg(os.path.join(root_path, "haproxy.cfg"))
+    
+    
+    def add_frontend(self, frontend_name: str, bind_port: int, backend_name: str) -> None:
+        # 添加一个新的前端配置
+        # 在haproxy.cfg中添加一个新的frontend配置，绑定指定的端口，并指定默认的backend
+        pass
+    
+    def add_backend(self, backend_name: str, servers: list[tuple[str, int]]) -> None:
+        # 添加一个新的后端配置
+        # 在haproxy.cfg中添加一个新的backend配置，包含指定的服务器列表（IP和端口）
+        pass
 
 
 if __name__ == "__main__":
-    cluster = Cluster()
-    cluster.init_cluster()
+    haproxy = HAProxy()
+    haproxy.init_cluster()
