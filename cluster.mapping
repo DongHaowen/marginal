@@ -1,4 +1,10 @@
 role	index	instance_type	placeholder_ip	private_ip	public_ip	instance_id	instance_name
-pd	0	m7g.large	10.0.1.1	10.0.14.219	3.145.200.173	i-0e6b6f09343ea9a80	tidb-pd-0
-tikv	0	i4g.xlarge	10.0.2.1	10.0.9.121	13.59.196.81	i-0a2f00bb5cde0f981	tidb-tikv-0
-tidb	0	c7g.xlarge	10.0.3.1	10.0.1.32	3.134.245.44	i-0e23dcaf0ae950ea4	tidb-tidb-0
+pd	0	m7g.large	10.0.0.1	10.0.14.140	3.144.158.135	i-07986818c9f96d971	tidb-pd-0
+pd	1	m7g.large	10.0.0.2	10.0.7.247	18.118.197.135	i-0c1972865f4c075c7	tidb-pd-1
+pd	2	m7g.large	10.0.0.3	10.0.15.203	3.135.223.105	i-04975194084971f0d	tidb-pd-2
+tikv	0	i4g.xlarge	10.0.1.1	10.0.12.70	18.118.185.10	i-00a474d5b4c25b660	tidb-tikv-0
+tikv	1	i4g.xlarge	10.0.1.2	10.0.7.173	18.220.232.245	i-04fed9497c0451420	tidb-tikv-1
+tikv	2	i4g.xlarge	10.0.1.3	10.0.8.38	18.118.111.100	i-080cddd2c39acf77a	tidb-tikv-2
+tidb	0	c7g.xlarge	10.0.2.1	10.0.5.116	3.143.108.237	i-004d37b3559a2f79e	tidb-tidb-0
+tidb	1	c7g.xlarge	10.0.2.2	10.0.13.157	3.142.144.252	i-0cce61dd6ace989d8	tidb-tidb-1
+tidb	2	c7g.xlarge	10.0.2.3	10.0.7.92	18.216.96.65	i-06bc85cd49ca6ff36	tidb-tidb-2
