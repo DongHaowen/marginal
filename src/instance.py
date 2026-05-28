@@ -45,4 +45,10 @@ class Instance:
     
     def to_array(self) -> list:
         return np.array([self.price, self.performance["cpu"], self.performance["memory"], self.performance["network"], self.performance["disk"]])
+    
+    def real_capacity(self) -> tuple[dict[str, float], dict[str, float]]:
+        # 读取Remote Server的监控数据，计算实际使用的资源均值和波动幅度
+        real_usage = None
+        real_flunc = None
+        return real_usage, real_flunc
         
