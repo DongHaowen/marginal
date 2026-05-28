@@ -49,7 +49,7 @@ def _render_prepare_commands(workload: dict[str, Any]) -> list[str]:
 			[
 				"# TPC-C data prepare",
 				(
-					"tiup bench tpcc prepare -h 127.0.0.1 "
+					"tiup bench tpcc prepare -h "
 					"--db \"$DB\" --port \"$PORT\" --user \"$USER\" --password \"$PASSWORD\" "
 					f"--warehouses {warehouses} --parts {parts}"
 				),
@@ -62,7 +62,7 @@ def _render_prepare_commands(workload: dict[str, Any]) -> list[str]:
 			[
 				"# TPC-H data prepare",
 				(
-					"tiup bench tpch prepare -h 127.0.0.1 "
+					"tiup bench tpch prepare "
 					"--db \"$DB\" --port \"$PORT\" --user \"$USER\" --password \"$PASSWORD\" "
 					f"--sf {sf}"
 				),
@@ -75,7 +75,7 @@ def _render_prepare_commands(workload: dict[str, Any]) -> list[str]:
 			[
 				"# CH data prepare",
 				(
-					"tiup bench ch prepare -h 127.0.0.1 "
+					"tiup bench ch prepare "
 					"--db \"$DB\" --port \"$PORT\" --user \"$USER\" --password \"$PASSWORD\" "
 					f"--warehouses {warehouses}"
 				),
@@ -92,7 +92,7 @@ def _render_run_command(workload: dict[str, Any], duration: int) -> str | None:
 	if workload_type == "tpcc":
 		warehouses = int(workload.get("tpcc_warehouses", 1))
 		return (
-			"tiup bench tpcc run -h 127.0.0.1 "
+			"tiup bench tpcc run "
 			"--db \"$DB\" --port \"$PORT\" --user \"$USER\" --password \"$PASSWORD\" "
 			f"--warehouses {warehouses} --time {duration}"
 		)
@@ -100,7 +100,7 @@ def _render_run_command(workload: dict[str, Any], duration: int) -> str | None:
 	if workload_type == "tpch":
 		sf = int(workload.get("tpch_sf", 1))
 		return (
-			"tiup bench tpch run -h 127.0.0.1 "
+			"tiup bench tpch run -h "
 			"--db \"$DB\" --port \"$PORT\" --user \"$USER\" --password \"$PASSWORD\" "
 			f"--sf {sf} --time {duration}"
 		)
@@ -108,7 +108,7 @@ def _render_run_command(workload: dict[str, Any], duration: int) -> str | None:
 	if workload_type == "ch":
 		warehouses = int(workload.get("ch_warehouses", 1))
 		return (
-			"tiup bench ch run -h 127.0.0.1 "
+			"tiup bench ch run -h "
 			"--db \"$DB\" --port \"$PORT\" --user \"$USER\" --password \"$PASSWORD\" "
 			f"--warehouses {warehouses} --time {duration}"
 		)
