@@ -51,7 +51,7 @@ def _render_prepare_commands(workload: dict[str, Any]) -> list[str]:
 			[
 				"# TPC-C data prepare",
 				(
-					"tiup bench tpcc prepare -h "
+					"tiup bench tpcc prepare "
 					"--db \"$DB\" --port \"$PORT\" --user \"$USER\" --password \"$PASSWORD\" "
 					f"--warehouses {warehouses} --parts {parts} --threads \"$THREADS\""
 				),
