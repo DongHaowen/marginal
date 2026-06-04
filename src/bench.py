@@ -118,6 +118,15 @@ def _render_run_command(workload: dict[str, Any], duration: int) -> str | None:
 	return None
 
 
+def _render_cleanup_commands(workload: dict[str, Any]) -> list[str]:
+	workload_type = str(workload.get("type", "")).strip().lower()
+
+	if workload_type in {"tpcc", "tpch", "ch"}:
+		return [f"tiup bench {workload_type} clean --db \"$DB\" --port \"$PORT\" --user \"$USER\" --password \"$PASSWORD\""]
+
+	return []
+
+
 def generate_prepare_script(tenant: dict[str, Any], output_path: str) -> Path:
 	tenant_name = str(tenant.get("name", "tenant")).strip() or "tenant"
 	db = str(_tenant_value(tenant, "db", _tenant_value(tenant, "database", "test")))
@@ -222,6 +231,7 @@ def generate_cleanup_script(tenant: dict[str, Any], output_path: str) -> Path:
 	port = int(_tenant_value(tenant, "port", 4000))
 	user = str(_tenant_value(tenant, "user", "root"))
 	password = str(_tenant_value(tenant, "password", ""))
+	workloads = tenant.get("workload", []) or []
 
 	lines = [
 		"#!/usr/bin/env bash",
@@ -233,11 +243,15 @@ def generate_cleanup_script(tenant: dict[str, Any], output_path: str) -> Path:
 		f"USER=\"{user}\"",
 		f"PASSWORD=\"{password}\"",
 		"",
-		"tiup bench clean --db \"$DB\" --port \"$PORT\" --user \"$USER\" --password \"$PASSWORD\"",
-		"",
-		f'echo "[${{0##*/}}] cleanup tenant {tenant_name} done"',
-		"",
 	]
+
+	for workload in workloads:
+		workload_type = str(workload.get("type", "unknown"))
+		lines.append(f'echo "[${{0##*/}}] tenant {tenant_name} cleanup workload: {workload_type}"')
+		lines.extend(_render_cleanup_commands(workload))
+		lines.append("")
+
+	lines.extend([f'echo "[${{0##*/}}] cleanup tenant {tenant_name} done"', ""])
 
 	out_dir = Path(output_path)
 	out_dir.mkdir(parents=True, exist_ok=True)
