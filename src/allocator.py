@@ -34,6 +34,7 @@ class Allocator:
     
     @abstractmethod
     def allocate(self) -> dict[str, list[str]]:
+        # 
         pass
 
 

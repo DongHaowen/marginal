@@ -1,0 +1,10 @@
+tenant:
+  name: simple_tpcc
+  port: 4000
+  workload:
+    - type: tpcc
+      tpcc_warehouses: 1
+      tpcc_parts: 1
+  runtime:
+    - start: 30
+      end: 330

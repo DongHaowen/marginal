@@ -1,0 +1,9 @@
+tenant:
+  name: simple_tpch
+  port: 4000
+  workload:
+    - type: tpch
+      tpch_sf: 1
+  runtime:
+    - start: 30
+      end: 330

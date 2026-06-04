@@ -1,0 +1,9 @@
+tenant:
+  name: simple_ch
+  port: 4000
+  workload:
+    - type: ch
+      ch_warehouses: 1
+  runtime:
+    - start: 30
+      end: 330
