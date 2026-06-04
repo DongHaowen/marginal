@@ -53,7 +53,7 @@ def _render_prepare_commands(workload: dict[str, Any]) -> list[str]:
 				(
 					"tiup bench tpcc prepare "
 					"--db \"$DB\" --port \"$PORT\" --user \"$USER\" --password \"$PASSWORD\" "
-					f"--warehouses {warehouses} --parts {parts} --threads \"$THREADS\""
+					f"--warehouses {warehouses} --parts {parts}"
 				),
 				"",
 			]
@@ -66,7 +66,7 @@ def _render_prepare_commands(workload: dict[str, Any]) -> list[str]:
 				(
 					"tiup bench tpch prepare "
 					"--db \"$DB\" --port \"$PORT\" --user \"$USER\" --password \"$PASSWORD\" "
-					f"--sf {sf} --threads \"$THREADS\""
+					f"--sf {sf}"
 				),
 				"",
 			]
@@ -79,7 +79,7 @@ def _render_prepare_commands(workload: dict[str, Any]) -> list[str]:
 				(
 					"tiup bench ch prepare "
 					"--db \"$DB\" --port \"$PORT\" --user \"$USER\" --password \"$PASSWORD\" "
-					f"--warehouses {warehouses} --threads \"$THREADS\""
+					f"--warehouses {warehouses}"
 				),
 				"",
 			]
