@@ -98,3 +98,4 @@ haproxy.cfg
 tidb/lightning/
 sorted
 bench/*.sh
+monitor/

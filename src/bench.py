@@ -8,7 +8,8 @@ from typing import Any
 2. 根据测试类型设置规模参数
 3. 基于连接和规模参数生成prepare.sh脚本
 4. 根据测试启动时间和持续时间参数生成run.sh脚本
-5. 整合prepare.sh和run.sh脚本,生成最终的执行脚本execute.sh
+5. 生成cleanup.sh脚本用于清理测试环境
+6. 整合prepare.sh和run.sh脚本,生成最终的执行脚本execute.sh
 
 参数的配置如bench/sample.yaml所示
 每一组测试均以tenant为单位进行配置
@@ -23,6 +24,7 @@ runtime参数用于设置启动时间和结束时间,可以包含多组(start,en
 - port: 默认为4000
 - user: 默认为root
 - password: 默认为空字符串
+- threads: 默认为100
 测试规模参数:
 - tpcc类型下的warehouses参数默认为1
 - tpcc类型下的parts参数默认为1
@@ -51,7 +53,7 @@ def _render_prepare_commands(workload: dict[str, Any]) -> list[str]:
 				(
 					"tiup bench tpcc prepare -h "
 					"--db \"$DB\" --port \"$PORT\" --user \"$USER\" --password \"$PASSWORD\" "
-					f"--warehouses {warehouses} --parts {parts}"
+					f"--warehouses {warehouses} --parts {parts} --threads \"$THREADS\""
 				),
 				"",
 			]
@@ -64,7 +66,7 @@ def _render_prepare_commands(workload: dict[str, Any]) -> list[str]:
 				(
 					"tiup bench tpch prepare "
 					"--db \"$DB\" --port \"$PORT\" --user \"$USER\" --password \"$PASSWORD\" "
-					f"--sf {sf}"
+					f"--sf {sf} --threads \"$THREADS\""
 				),
 				"",
 			]
@@ -77,7 +79,7 @@ def _render_prepare_commands(workload: dict[str, Any]) -> list[str]:
 				(
 					"tiup bench ch prepare "
 					"--db \"$DB\" --port \"$PORT\" --user \"$USER\" --password \"$PASSWORD\" "
-					f"--warehouses {warehouses}"
+					f"--warehouses {warehouses} --threads \"$THREADS\""
 				),
 				"",
 			]
@@ -94,7 +96,7 @@ def _render_run_command(workload: dict[str, Any], duration: int) -> str | None:
 		return (
 			"tiup bench tpcc run "
 			"--db \"$DB\" --port \"$PORT\" --user \"$USER\" --password \"$PASSWORD\" "
-			f"--time {duration}s"
+			f"--time {duration}s --threads \"$THREADS\""
 		)
 
 	if workload_type == "tpch":
@@ -102,7 +104,7 @@ def _render_run_command(workload: dict[str, Any], duration: int) -> str | None:
 		return (
 			"tiup bench tpch run "
 			"--db \"$DB\" --port \"$PORT\" --user \"$USER\" --password \"$PASSWORD\" "
-			f"--time {duration}s"
+			f"--time {duration}s --threads \"$THREADS\""
 		)
 
 	if workload_type == "ch":
@@ -110,7 +112,7 @@ def _render_run_command(workload: dict[str, Any], duration: int) -> str | None:
 		return (
 			"tiup bench ch run "
 			"--db \"$DB\" --port \"$PORT\" --user \"$USER\" --password \"$PASSWORD\" "
-			f"--time {duration}s"
+			f"--time {duration}s --threads \"$THREADS\""
 		)
 
 	return None
@@ -122,6 +124,7 @@ def generate_prepare_script(tenant: dict[str, Any], output_path: str) -> Path:
 	port = int(_tenant_value(tenant, "port", 4000))
 	user = str(_tenant_value(tenant, "user", "root"))
 	password = str(_tenant_value(tenant, "password", ""))
+	threads = int(_tenant_value(tenant, "threads", 100))
 	workloads = tenant.get("workload", []) or []
 
 	lines = [
@@ -133,6 +136,7 @@ def generate_prepare_script(tenant: dict[str, Any], output_path: str) -> Path:
 		f"PORT={port}",
 		f"USER=\"{user}\"",
 		f"PASSWORD=\"{password}\"",
+		f"THREADS={threads}",
 		"",
 	]
 
@@ -160,6 +164,7 @@ def generate_run_script(tenant: dict[str, Any], output_path: str) -> Path:
 	port = int(_tenant_value(tenant, "port", 4000))
 	user = str(_tenant_value(tenant, "user", "root"))
 	password = str(_tenant_value(tenant, "password", ""))
+	threads = int(_tenant_value(tenant, "threads", 100))
 	workloads = tenant.get("workload", []) or []
 	runtimes = tenant.get("runtime", []) or []
 
@@ -171,6 +176,7 @@ def generate_run_script(tenant: dict[str, Any], output_path: str) -> Path:
 		f"PORT={port}",
 		f"USER=\"{user}\"",
 		f"PASSWORD=\"{password}\"",
+		f"THREADS={threads}",
 		"",
 		"current_time=0",
 		"",
@@ -205,6 +211,37 @@ def generate_run_script(tenant: dict[str, Any], output_path: str) -> Path:
 	out_dir = Path(output_path)
 	out_dir.mkdir(parents=True, exist_ok=True)
 	script_path = out_dir / f"{tenant_name}_run.sh"
+	script_path.write_text("\n".join(lines), encoding="utf-8")
+	script_path.chmod(0o755)
+	return script_path
+
+
+def generate_cleanup_script(tenant: dict[str, Any], output_path: str) -> Path:
+	tenant_name = str(tenant.get("name", "tenant")).strip() or "tenant"
+	db = str(_tenant_value(tenant, "db", _tenant_value(tenant, "database", "test")))
+	port = int(_tenant_value(tenant, "port", 4000))
+	user = str(_tenant_value(tenant, "user", "root"))
+	password = str(_tenant_value(tenant, "password", ""))
+
+	lines = [
+		"#!/usr/bin/env bash",
+		"set -euo pipefail",
+		"",
+		f'echo "[${{0##*/}}] cleanup tenant {tenant_name} start"',
+		f"DB=\"{db}\"",
+		f"PORT={port}",
+		f"USER=\"{user}\"",
+		f"PASSWORD=\"{password}\"",
+		"",
+		"tiup bench clean --db \"$DB\" --port \"$PORT\" --user \"$USER\" --password \"$PASSWORD\"",
+		"",
+		f'echo "[${{0##*/}}] cleanup tenant {tenant_name} done"',
+		"",
+	]
+
+	out_dir = Path(output_path)
+	out_dir.mkdir(parents=True, exist_ok=True)
+	script_path = out_dir / f"{tenant_name}_cleanup.sh"
 	script_path.write_text("\n".join(lines), encoding="utf-8")
 	script_path.chmod(0o755)
 	return script_path
@@ -266,6 +303,42 @@ def _generate_execute_script_for_all_tenants(tenants: list[dict[str, Any]], outp
 	out_dir = Path(output_path)
 	out_dir.mkdir(parents=True, exist_ok=True)
 	script_path = out_dir / "execute.sh"
+	script_path.write_text("\n".join(lines), encoding="utf-8")
+	script_path.chmod(0o755)
+	return script_path
+
+
+def _generate_cleanup_script_for_all_tenants(tenants: list[dict[str, Any]], output_path: str) -> Path:
+	lines = [
+		"#!/usr/bin/env bash",
+		"SCRIPT_DIR=$(cd -- \"$(dirname -- \"$0\")\" && pwd)",
+		"",
+	]
+
+	for tenant in tenants:
+		tenant_name = str(tenant.get("name", "tenant")).strip() or "tenant"
+		lines.append(f"bash \"$SCRIPT_DIR/{tenant_name}_cleanup.sh\"")
+
+	lines.extend(["", "# Remove all generated scripts, then remove this cleanup script itself"])
+
+	for tenant in tenants:
+		tenant_name = str(tenant.get("name", "tenant")).strip() or "tenant"
+		lines.append(f"rm -f \"$SCRIPT_DIR/{tenant_name}_prepare.sh\"")
+		lines.append(f"rm -f \"$SCRIPT_DIR/{tenant_name}_run.sh\"")
+		lines.append(f"rm -f \"$SCRIPT_DIR/{tenant_name}_cleanup.sh\"")
+		lines.append(f"rm -f \"$SCRIPT_DIR/{tenant_name}_execute.sh\"")
+
+	lines.extend(
+		[
+			"rm -f \"$SCRIPT_DIR/execute.sh\"",
+			"rm -f \"$SCRIPT_DIR/cleanup.sh\"",
+			"",
+		]
+	)
+
+	out_dir = Path(output_path)
+	out_dir.mkdir(parents=True, exist_ok=True)
+	script_path = out_dir / "cleanup.sh"
 	script_path.write_text("\n".join(lines), encoding="utf-8")
 	script_path.chmod(0o755)
 	return script_path
@@ -342,8 +415,10 @@ def generate_all_scripts_from_config(config_path: str, output_path: str | None =
 	for tenant in tenants:
 		generated_scripts.append(generate_prepare_script(tenant, str(out_dir)))
 		generated_scripts.append(generate_run_script(tenant, str(out_dir)))
+		generated_scripts.append(generate_cleanup_script(tenant, str(out_dir)))
 
 	generated_scripts.append(_generate_execute_script_for_all_tenants(tenants, str(out_dir)))
+	generated_scripts.append(_generate_cleanup_script_for_all_tenants(tenants, str(out_dir)))
 
 	return generated_scripts
 
