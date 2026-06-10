@@ -3,7 +3,7 @@ tenant:
   port: 4000
   workload:
     - type: ch
-      ch_warehouses: 1
+      ch_warehouses: 100
   runtime:
     - start: 30
       end: 330
