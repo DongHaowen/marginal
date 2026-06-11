@@ -95,7 +95,9 @@ __pypackages__/
 
 # Data files
 haproxy.cfg
+*.cfg
 tidb/lightning/
 sorted
 bench/*.sh
+bench/*.sql
 monitor/

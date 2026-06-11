@@ -7,6 +7,7 @@ output_dir = os.path.join(control_dir, "bench")
 output_log = os.path.join(output_dir, "tpcc.log")
 prepare_sh = os.path.join(output_dir, "tpcc_prepare.sh")
 run_sh = os.path.join(output_dir, "tpcc_run.sh")
+ddl_sql = os.path.join(output_dir, "tpcc_tenants.sql")
 
 db_params = [10,10,20,50,100]
 db_list = [
@@ -74,6 +75,7 @@ def generate_run_script():
     
     for workload_info in workload_list:
         workload_name = workload_info["workload"]
+        tenant_user = f"tenant_{workload_name}"
         db_name = workload_info["db"]
         port = workload_info["port"]
         threads = workload_info["threads"]
@@ -85,7 +87,7 @@ def generate_run_script():
             f"# Run {workload_name} on {db_name}",
             (
                 f"tiup bench tpcc run "
-                f"--db \"{db_name}\" --port {port} --user root --password \"\" "
+                f"--db \"{db_name}\" --port {port} --user \"{tenant_user}\" --password \"\" "
                 f"--warehouses {warehouses} --time {time_str} --threads {threads} >> \"{workload_log}\" 2>&1 &"
             ),
             "",
@@ -102,6 +104,35 @@ def generate_run_script():
     
     os.chmod(run_sh, 0o755)
 
+def generate_ddl_sqls():
+    # 函数需要根据workload_list生成sql文件
+    # sql文件包含创建租户、对应数据库授权的DDL语句
+    # 租户名称使用workload名称，例如w1对应的租户为w1，当其使用的数据库为db1时，授权语句为GRANT ALL ON db1.* TO 'tenant_w1'@'%';
+    os.makedirs(output_dir, exist_ok=True)
+
+    lines = [
+        "-- Auto-generated tenant DDL statements",
+        "",
+    ]
+
+    for workload_info in workload_list:
+        workload_name = workload_info["workload"]
+        db_name = workload_info["db"]
+        tenant_user = f"tenant_{workload_name}"
+
+        lines.extend([
+            f"-- {workload_name} uses {db_name}",
+            f"CREATE USER IF NOT EXISTS '{tenant_user}'@'%' IDENTIFIED BY '';",
+            f"GRANT ALL ON {db_name}.* TO '{tenant_user}'@'%';",
+            "",
+        ])
+
+    lines.append("FLUSH PRIVILEGES;")
+
+    with open(ddl_sql, "w", encoding="utf-8") as f:
+        f.write("\n".join(lines) + "\n")
+
 if __name__ == "__main__":
     generate_prepare_script()
     generate_run_script()
+    generate_ddl_sqls()

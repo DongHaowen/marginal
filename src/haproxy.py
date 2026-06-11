@@ -59,8 +59,6 @@ class HAProxy:
         self.tidb_servers = [server.get("host", "") for server in topology.get("tidb_servers", [])]
         self.tikv_servers = [server.get("host", "") for server in topology.get("tikv_servers", [])]
         self.pd_servers = [server.get("host", "") for server in topology.get("pd_servers", [])]
-        
-        
     
     def init_haproxy_cfg(self, haproxy_cfg: str = "./haproxy.cfg") -> str:
         # 生成默认的HAProxy配置内容
@@ -112,6 +110,7 @@ backend tidb_backend
     def add_frontend(self, frontend_name: str, bind_port: int, backend_name: str) -> None:
         # 添加一个新的前端配置
         # 在haproxy.cfg中添加一个新的frontend配置，绑定指定的端口，并指定默认的backend
+        
         pass
     
     def add_backend(self, backend_name: str, servers: list[tuple[str, int]]) -> None:
@@ -120,6 +119,80 @@ backend tidb_backend
         pass
 
 
+    def generate_haproxy_cfg(self, alloc_map: dict, haproxy_cfg: str = "./haproxy_new.cfg") -> str:
+        # Alloc Map的格式如下
+        # {4000: [0, 1], 4001: [2, 3]}，表示4000端口对应tidb-0和tidb-1，4001端口对应tidb-2和tidb-3
+        # 根据Alloc Map生成新的HAProxy配置文件
+        # 保留init的基础部分后，额外依次添加新的前端和对应的后端配置
+        # 前端明明规则按照frontend_{port}命名，后端命名规则按照backend_{port}命名
+
+        base = (
+            "global\n"
+            "    log /dev/log local0\n"
+            "    log /dev/log local1 notice\n"
+            "\n"
+            "    daemon\n"
+            "    maxconn 20000\n"
+            "\n"
+            "    stats socket /var/lib/haproxy/stats mode 600 level admin\n"
+            "\n"
+            "defaults\n"
+            "    log global\n"
+            "    mode tcp\n"
+            "\n"
+            "    option tcplog\n"
+            "    option dontlognull\n"
+            "\n"
+            "    timeout connect 5s\n"
+            "    timeout client  1h\n"
+            "    timeout server  1h\n"
+            "\n"
+            "    retries 3\n"
+        )
+
+        default_servers = "\n".join(
+            f"    server tidb_{i} {ip}:4000 check"
+            for i, ip in enumerate(self.tidb_servers)
+        )
+        default_section = (
+            "frontend tidb_frontend\n"
+            "    bind *:4000\n"
+            "    default_backend tidb_backend\n"
+            "\n"
+            f"backend tidb_backend\n{default_servers}\n"
+        )
+
+        sections = [base, default_section]
+        for port, indices in alloc_map.items():
+            backend_name = f"backend_{port}"
+            frontend_section = (
+                f"frontend frontend_{port}\n"
+                f"    bind *:{port}\n"
+                f"    default_backend {backend_name}\n"
+            )
+            server_lines = "\n".join(
+                f"    server tidb_{idx} {self.tidb_servers[idx]}:4000 check"
+                for idx in indices
+                if idx < len(self.tidb_servers)
+            )
+            backend_section = f"backend {backend_name}\n{server_lines}\n"
+            sections.extend([frontend_section, backend_section])
+
+        cfg = "\n".join(sections)
+        with open(haproxy_cfg, "w", encoding="utf-8") as f:
+            f.write(cfg)
+        return cfg
+    
+    def generate_full_cfg(self, port_list, haproxy_cfg: str = "./haproxy_full.cfg") -> str:
+        # 生成完整的HAProxy配置文件
+        # 包含init的基础部分和generate_haproxy_cfg生成的部分
+        # 主要用于调试和验证生成的配置内容是否正确
+        alloc_map = {port: list(range(len(self.tidb_servers))) for port in port_list}
+        return self.generate_haproxy_cfg(alloc_map, haproxy_cfg)
+
+
 if __name__ == "__main__":
     haproxy = HAProxy()
     haproxy.init_cluster()
+    
+    haproxy.generate_full_cfg([4000, 4001, 4002])
