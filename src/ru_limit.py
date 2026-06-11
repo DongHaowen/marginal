@@ -35,3 +35,5 @@ def generate_ru_limit_sql(tenant_list: list[str], output_file: str = ru_limit_sq
 
 if __name__ == "__main__":
     sql = generate_ru_limit_sql(DEFAULT_TENANT_LIST)
+    
+# ALTER RESOUCE GROUP tenant_w1 RU_PER_SEC = 10000;

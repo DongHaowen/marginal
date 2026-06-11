@@ -7,7 +7,8 @@ output_dir = os.path.join(control_dir, "bench")
 output_log = os.path.join(output_dir, "tpcc.log")
 prepare_sh = os.path.join(output_dir, "tpcc_prepare.sh")
 run_sh = os.path.join(output_dir, "tpcc_run.sh")
-ddl_sql = os.path.join(output_dir, "tpcc_tenants.sql")
+create_tenants_sql = os.path.join(output_dir, "tpcc_create_tenants.sql")
+grant_privileges_sql = os.path.join(output_dir, "tpcc_grant_privileges.sql")
 
 db_params = [10,10,20,50,100]
 db_list = [
@@ -110,27 +111,32 @@ def generate_ddl_sqls():
     # 租户名称使用workload名称，例如w1对应的租户为w1，当其使用的数据库为db1时，授权语句为GRANT ALL ON db1.* TO 'tenant_w1'@'%';
     os.makedirs(output_dir, exist_ok=True)
 
-    lines = [
-        "-- Auto-generated tenant DDL statements",
+    tenant_users = list(dict.fromkeys(f"tenant_{item['workload']}" for item in workload_list))
+    db_names = list(dict.fromkeys(item["db"] for item in db_list))
+
+    create_lines = [
+        "-- Auto-generated tenant create statements",
         "",
     ]
+    for tenant_user in tenant_users:
+        create_lines.append(f"CREATE USER IF NOT EXISTS '{tenant_user}'@'%' IDENTIFIED BY '';")
+    create_lines.append("")
 
-    for workload_info in workload_list:
-        workload_name = workload_info["workload"]
-        db_name = workload_info["db"]
-        tenant_user = f"tenant_{workload_name}"
+    grant_lines = [
+        "-- Auto-generated grant statements (each database to all tenants)",
+        "",
+    ]
+    for db_name in db_names:
+        for tenant_user in tenant_users:
+            grant_lines.append(f"GRANT ALL ON {db_name}.* TO '{tenant_user}'@'%';")
+        grant_lines.append("")
+    grant_lines.append("FLUSH PRIVILEGES;")
 
-        lines.extend([
-            f"-- {workload_name} uses {db_name}",
-            f"CREATE USER IF NOT EXISTS '{tenant_user}'@'%' IDENTIFIED BY '';",
-            f"GRANT ALL ON {db_name}.* TO '{tenant_user}'@'%';",
-            "",
-        ])
+    with open(create_tenants_sql, "w", encoding="utf-8") as f:
+        f.write("\n".join(create_lines) + "\n")
 
-    lines.append("FLUSH PRIVILEGES;")
-
-    with open(ddl_sql, "w", encoding="utf-8") as f:
-        f.write("\n".join(lines) + "\n")
+    with open(grant_privileges_sql, "w", encoding="utf-8") as f:
+        f.write("\n".join(grant_lines) + "\n")
 
 if __name__ == "__main__":
     generate_prepare_script()
