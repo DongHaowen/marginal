@@ -19,7 +19,7 @@ workload_params = [
     1,1,2,2,2,3,4,5
 ]
 workload_list = [
-    {"workload": f"w{i+1}", "threads": 50, "time":"3m", "db": f"db{workload_params[i]}", "port": begin_port + i, "warehouses": db_params[workload_params[i]-1]} for i in range(len(workload_params))
+    {"workload": f"w{i+1}", "threads": 50, "time":"1m", "db": f"db{workload_params[i]}", "port": begin_port + i, "warehouses": db_params[workload_params[i]-1]} for i in range(len(workload_params))
 ]
 
 def generate_prepare_script():
